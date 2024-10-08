@@ -1,50 +1,47 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
+import TypingApp from './TypingApp';
+import ResponsiveAppBar from './ResponsiveAppBar';
 import './App.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { Container } from '@mui/material';
 
-function Hello() {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
-  );
+// Define a custom theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2', // Blue
+    },
+    secondary: {
+      main: '#dc004e', // Red
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+});
+
+function KeyboardApp() {
+  return <Typography variant="h4">Ton clavier</Typography>;
+}
+
+function Help() {
+  return <Typography variant="h4">Page d'aide</Typography>;
 }
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Container maxWidth={false} disableGutters>
+          <ResponsiveAppBar />
+          <Routes>
+            <Route path="/typing" element={<TypingApp />} />
+            <Route path="/keyboard" element={<KeyboardApp />} />
+            <Route path="/help" element={<Help />} />
+          </Routes>
+        </Container>
+      </Router>
+    </ThemeProvider>
   );
 }
