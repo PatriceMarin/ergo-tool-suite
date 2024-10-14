@@ -12,25 +12,24 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/PatriceMarin/ergo-tool-suite#readme",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/PatriceMarin/ergo-tool-suite/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/PatriceMarin/ergo-tool-suite.git"
   },
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Patrice MARIN",
+    "email": "patrice.marin@gmail.com"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "Patrice MARIN",
+      "email": "patrice.marin@gmail.com",
+      "url": "https://github.com/PatriceMarin"
     }
   ],
   "main": "./.erb/dll/main.bundle.dev.js",
@@ -179,8 +178,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "ergo-tool-suite",
+    "appId": "ergo-tool-suite.io",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -239,8 +238,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "ergo-tool-suite",
+      "repo": "ergo-tool-suite"
     }
   },
   "collective": {
