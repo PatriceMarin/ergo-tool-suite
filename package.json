@@ -238,7 +238,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "ergo-tool-suite",
+      "owner": "PatriceMarin",
       "repo": "ergo-tool-suite"
     }
   },
