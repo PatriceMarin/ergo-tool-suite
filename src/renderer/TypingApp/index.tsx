@@ -9,23 +9,11 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Stack from '@mui/material/Stack';
 import { Paper, Typography, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-
-// Type for a single lesson
-interface Lesson {
-  id: string;
-  title: string;
-  content: string;
-}
-
-// Type for the lessons grouped by level
-interface LessonsData {
-  lessons: {
-    [level: string]: Lesson[];
-  };
-}
+import { Lesson } from './Lesson';
+import { Lessons } from './Lessons';
 
 // Simulated lessons data
-const lessonsData: LessonsData = {
+const mockedLessons: Lessons = {
   lessons: {
     '1': [
       {
@@ -91,6 +79,7 @@ const TypingApp = () => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [userInput, setUserInput] = useState<string>('');
   const [errorCount, setErrorCount] = useState<number>(0);
+  const [globalErrorCount, setGlobalErrorCount] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
@@ -106,7 +95,7 @@ const TypingApp = () => {
 
   useEffect(() => {
     if (level) {
-      setLessons(lessonsData.lessons[level] || []);
+      setLessons(mockedLessons.lessons[level] || []);
     }
   }, [level]);
 
@@ -131,19 +120,70 @@ const TypingApp = () => {
     const value = event.target.value;
     setUserInput(value);
 
-    let errors = 0;
     const originalText = selectedLesson?.content || '';
 
-    // Comparer chaque caractère du texte original avec le texte saisi
-    for (let i = 0; i < value.length; i++) {
-      if (value[i] !== originalText[i]) {
-        errors++;
+    // Diviser le texte original et la saisie de l'utilisateur en mots
+    const originalWords = originalText.split(' ');
+    const userWords = value.split(' ');
+
+    let liveErrors = 0; // Erreurs en temps réel
+    let tempGlobalErrors = globalErrorCount; // Pour mémoriser les erreurs globales
+    let isCorrecting = false; // Pour savoir si l'utilisateur est en phase de correction
+
+    // Comparer les mots jusqu'à la longueur de la saisie utilisateur
+    const minLength = Math.min(originalWords.length, userWords.length);
+
+    for (let i = 0; i < minLength; i++) {
+      const originalWord = originalWords[i];
+      const userWord = userWords[i];
+
+      // Si le mot utilisateur est plus court que le mot attendu, on considère cela comme une correction
+      if (userWord.length < originalWord.length) {
+        isCorrecting = true; // L'utilisateur est en train de corriger
+      }
+
+      if (userWord.length <= originalWord.length) {
+        // Si le mot saisi est partiel, on compare les caractères partiellement
+        for (let j = 0; j < userWord.length; j++) {
+          if (userWord[j] !== originalWord[j]) {
+            liveErrors++;
+
+            // Ajouter une erreur globale seulement si ce n'est pas une correction active
+            if (!isCorrecting) {
+              tempGlobalErrors++;
+            }
+          }
+        }
+      } else {
+        // Si le mot est plus long que prévu, on compte ça comme une erreur entière
+        liveErrors++;
+        if (!isCorrecting) {
+          tempGlobalErrors++;
+        }
+      }
+
+      // Reset la correction une fois le mot complet est atteint
+      if (userWord.length === originalWord.length) {
+        isCorrecting = false; // Correction terminée
       }
     }
-    setErrorCount(errors);
+
+    // // Si l'utilisateur a écrit plus de mots que prévu (par exemple avec des espaces en trop)
+    // if (userWords.length > originalWords.length) {
+    //   liveErrors += userWords.length - originalWords.length;
+    //   if (!isCorrecting) {
+    //     tempGlobalErrors += userWords.length - originalWords.length;
+    //   }
+    // }
+
+    // Mettre à jour les erreurs en temps réel
+    setErrorCount(liveErrors);
+
+    // Mettre à jour les erreurs globales seulement s'il n'y a pas de correction active
+    setGlobalErrorCount(tempGlobalErrors);
 
     // Si l'utilisateur a saisi autant de caractères que le texte original ou plus, considérer la saisie comme terminée
-    if (value.length >= originalText.length) {
+    if (value.length >= originalText.length && liveErrors === 0) {
       stopTypingSession();
     }
   };
@@ -152,6 +192,7 @@ const TypingApp = () => {
     setIsTyping(true);
     setUserInput('');
     setErrorCount(0);
+    setGlobalErrorCount(0);
     setTimer(0);
     setSessionData(null);
 
@@ -170,7 +211,7 @@ const TypingApp = () => {
   const stopTypingSession = () => {
     setIsTyping(false);
     setSessionData({
-      errors: errorCount,
+      errors: globalErrorCount,
       time: timer,
     });
 
@@ -183,27 +224,45 @@ const TypingApp = () => {
   const isComplete = userInput === selectedLesson?.content;
 
   const renderColoredInput = (text: string, input: string) => {
-    const length = Math.max(text.length, input.length);
+    const originalWords = text.split(' ');
+    const inputWords = input.split(' ');
+
     const renderedText = [];
 
-    for (let i = 0; i < length; i++) {
-      const textChar = text[i] || '';
-      const inputChar = input[i] || '';
+    for (let i = 0; i < originalWords.length; i++) {
+      const originalWord = originalWords[i] || '';
+      const inputWord = inputWords[i] || '';
 
-      if (inputChar === textChar) {
+      if (inputWord === originalWord) {
+        // Le mot entier est correct
         renderedText.push(
-          <span key={i} style={{ color: 'green' }}>
-            {inputChar}
-          </span>,
-        );
-      } else if (inputChar) {
-        renderedText.push(
-          <span key={i} style={{ color: 'red' }}>
-            {textChar}
+          <span key={i} style={{ color: 'green', marginRight: '5px' }}>
+            {originalWord}
           </span>,
         );
       } else {
-        renderedText.push(<span key={i}>{textChar}</span>);
+        // Comparer chaque caractère du mot si le mot est partiel ou incorrect
+        for (let j = 0; j < originalWord.length; j++) {
+          const originalChar = originalWord[j] || '';
+          const inputChar = inputWord[j] || '';
+
+          if (inputChar === originalChar) {
+            renderedText.push(
+              <span key={`${i}-${j}`} style={{ color: 'green' }}>
+                {inputChar}
+              </span>,
+            );
+          } else if (inputChar) {
+            renderedText.push(
+              <span key={`${i}-${j}`} style={{ color: 'red' }}>
+                {originalChar}
+              </span>,
+            );
+          } else {
+            renderedText.push(<span key={`${i}-${j}`}>{originalChar}</span>);
+          }
+        }
+        renderedText.push(<span key={`space-${i}`}> </span>); // Ajouter un espace entre les mots
       }
     }
 
@@ -260,18 +319,6 @@ const TypingApp = () => {
                 ))}
               </Select>
             </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<PlayArrowIcon />}
-                disabled={!selectedLesson || isTyping}
-                onClick={startTypingSession}
-              >
-                Démarrer
-              </Button>
-            </FormControl>
           </Stack>
         </Paper>
       </Grid>
@@ -290,12 +337,36 @@ const TypingApp = () => {
             >
               <Grid size={6}>
                 <Paper elevation={0} sx={{ p: 2 }}>
-                  <Typography variant="body1">
+                  <Typography variant="h6">
                     {renderColoredInput(selectedLesson.content, userInput)}
                   </Typography>
                 </Paper>
               </Grid>
               <Grid size={6}>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<PlayArrowIcon />}
+                    disabled={
+                      !selectedLesson || isTyping || sessionData !== null
+                    }
+                    onClick={startTypingSession}
+                  >
+                    Démarrer
+                  </Button>
+                </FormControl>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<PlayArrowIcon />}
+                    disabled={!selectedLesson || isTyping || !sessionData}
+                    onClick={startTypingSession}
+                  >
+                    Recommencer
+                  </Button>
+                </FormControl>
                 <TextField
                   variant="outlined"
                   fullWidth
@@ -320,7 +391,7 @@ const TypingApp = () => {
           <Paper elevation={0} sx={{ p: 2 }}>
             {isComplete && (
               <Typography variant="h6" color="success.main">
-                Félicitations, vous avez fait un sans faute !
+                Félicitations, vous avez réussi !
               </Typography>
             )}
             <Typography variant="body1">
@@ -329,17 +400,6 @@ const TypingApp = () => {
             <Typography variant="body1">
               Temps écoulé: {sessionData.time}s
             </Typography>
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<PlayArrowIcon />}
-                disabled={!selectedLesson || isTyping}
-                onClick={startTypingSession}
-              >
-                Recommencer
-              </Button>
-            </FormControl>
           </Paper>
         </Grid>
       )}

@@ -1,13 +1,14 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import MyKeyboardApp from './MyKeyboardApp';
 import TypingApp from './TypingApp';
+// import VirtualKeyboard from './VirtualKeyboard';
 import ResponsiveAppBar from './ResponsiveAppBar';
 import './App.css';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import { Container } from '@mui/material';
 
 // Define a custom theme
-const theme = createTheme({
+let theme = createTheme({
   palette: {
     primary: {
       main: '#1976d2', // Blue
@@ -21,13 +22,16 @@ const theme = createTheme({
   },
 });
 
-function KeyboardApp() {
-  return <Typography variant="h4">Ton clavier</Typography>;
-}
-
-function Help() {
-  return <Typography variant="h4">Page d'aide</Typography>;
-}
+theme = createTheme(theme, {
+  palette: {
+    flushyYellow: {
+      main: '#E3D026',
+      light: '#E9DB5D',
+      dark: '#A29415',
+      contrastText: '#FFFFFF',
+    },
+  },
+});
 
 export default function App() {
   return (
@@ -37,8 +41,8 @@ export default function App() {
           <ResponsiveAppBar />
           <Routes>
             <Route path="/typing" element={<TypingApp />} />
-            <Route path="/keyboard" element={<KeyboardApp />} />
-            <Route path="/help" element={<Help />} />
+            <Route path="/keyboard" element={<MyKeyboardApp />} />
+            {/* <Route path="/help" element={<VirtualKeyboard />} /> */}
           </Routes>
         </Container>
       </Router>

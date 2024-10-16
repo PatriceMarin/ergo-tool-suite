@@ -17,7 +17,7 @@ import { Divider } from '@mui/material';
 
 const pages = [
   { name: 'Aide a la frappe', path: '/typing' }, // Add path to the route
-  { name: 'Ton Clavier', path: '/keyboard' },
+  { name: 'Mon Clavier', path: '/keyboard' },
   { name: 'Aide', path: '/help' },
 ];
 const settings = ['Mon Profile', 'Logout'];
