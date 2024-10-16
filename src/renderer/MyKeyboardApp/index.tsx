@@ -358,51 +358,56 @@ const MyKeyboard = () => {
       )}
 
       <Grid size={12}>
-        {/* <Paper
-          elevation={3}
+        <Paper
+          elevation={0}
           component="section"
-          sx={{ p: 2, backgroundColor: 'white' }}
-        > */}
-        <Box className="keyboard-base">
-          {keys.map((key) => {
-            if (key.id === 'arrow-group') {
-              return (
-                <Box
-                  key={key.id}
-                  className="group"
-                  sx={{ gridColumn: `span ${key.columns}` }}
-                >
-                  <Button
-                    className="subkey"
-                    variant="contained"
-                    sx={{
-                      backgroundColor: withColors
-                        ? (key.color ?? 'white')
-                        : 'white',
-                      color: 'black',
-                    }}
+          sx={{
+            p: 2,
+            backgroundColor: 'white',
+            justifyContent: 'center',
+            display: 'flex',
+          }}
+        >
+          <Box className="keyboard-base">
+            {keys.map((key) => {
+              if (key.id === 'arrow-group') {
+                return (
+                  <Box
+                    key={key.id}
+                    className="group"
+                    sx={{ gridColumn: `span ${key.columns}` }}
                   >
-                    ↑
-                  </Button>
-                  <Button
-                    className="subkey"
-                    variant="contained"
-                    sx={{
-                      backgroundColor: withColors
-                        ? (key.color ?? 'white')
-                        : 'white',
-                      color: 'black',
-                    }}
-                  >
-                    ↓
-                  </Button>
-                </Box>
-              );
-            }
-            return renderKey(key);
-          })}
-        </Box>
-        {/* </Paper> */}
+                    <Button
+                      className="subkey"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: withColors
+                          ? (key.color ?? 'white')
+                          : 'white',
+                        color: 'black',
+                      }}
+                    >
+                      ↑
+                    </Button>
+                    <Button
+                      className="subkey"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: withColors
+                          ? (key.color ?? 'white')
+                          : 'white',
+                        color: 'black',
+                      }}
+                    >
+                      ↓
+                    </Button>
+                  </Box>
+                );
+              }
+              return renderKey(key);
+            })}
+          </Box>
+        </Paper>
       </Grid>
     </Grid>
   );
