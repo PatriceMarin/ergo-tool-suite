@@ -10,11 +10,15 @@ import { Container } from '@mui/material';
 // Define a custom theme
 let theme = createTheme({
   palette: {
-    primary: {
-      main: '#1976d2', // Blue
+    customWhite: {
+      main: '#000000',
+      light: '#FFFFFF', // Code couleur pour 'custom'
+      contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
     },
-    secondary: {
-      main: '#dc004e', // Red
+    customBlack: {
+      main: '#FFFFFF',
+      light: '#000000', // Code couleur pour 'custom'
+      contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
     },
   },
   typography: {

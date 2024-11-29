@@ -117,7 +117,7 @@ const TypingApp = () => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    const { value } = event.target;
     setUserInput(value);
 
     const originalText = selectedLesson?.content || '';
@@ -180,7 +180,8 @@ const TypingApp = () => {
     setErrorCount(liveErrors);
 
     // Mettre à jour les erreurs globales seulement s'il n'y a pas de correction active
-    setGlobalErrorCount(tempGlobalErrors);
+    if (liveErrors !== 0 && liveErrors > globalErrorCount)
+      setGlobalErrorCount(liveErrors);
 
     // Si l'utilisateur a saisi autant de caractères que le texte original ou plus, considérer la saisie comme terminée
     if (value.length >= originalText.length && liveErrors === 0) {
@@ -270,7 +271,15 @@ const TypingApp = () => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ p: 2, backgroundColor: 'white' }}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        p: 2,
+        backgroundColor: 'white',
+        borderRadius: '16px',
+      }}
+    >
       <Grid size={12}>
         <Typography variant="h4" component="h5" color="black">
           Outil d'aide à la frappe

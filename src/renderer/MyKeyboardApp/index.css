@@ -1,25 +1,25 @@
 body * {
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .keyboard-base {
-    max-width: 1085px;
-    padding: 20px;
-    background-color: rgb(197, 197, 197);
-    border-radius: 10px;
-    display: grid;
-    grid-template-columns: repeat(30, 30px);
-    grid-template-rows: repeat(6, 60px);
-    grid-gap: 5px;
+  max-width: 1085px;
+  padding: 20px;
+  background-color: rgb(197, 197, 197);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(30, 30px);
+  grid-template-rows: repeat(6, 60px);
+  grid-gap: 5px;
 }
 
 
 .key {
-    background-color: rgb(243, 243, 243);
-    border: 2px solid black;
-    border-radius: 5px;
-    grid-column: span 2;
+  background-color: rgb(243, 243, 243);
+  border: 2px solid black;
+  border-radius: 5px;
+  grid-column: span 2;
 }
 
 .key:hover {
@@ -27,57 +27,57 @@ body * {
 }
 
 .delete {
-    grid-column: span 4;
-    text-align: right;
-    padding-right: 5px;
-    font-size: 25px;
+  grid-column: span 4;
+  text-align: right;
+  padding-right: 5px;
+  font-size: 25px;
 }
 
 .tab {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .backslash {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .capslock {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .return {
-    grid-column: span 3;
-    grid-row: span 2;
+  grid-column: span 3;
+  grid-row: span 2;
 }
 
 .leftshift {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .rightshift {
-    grid-column: span 5;
+  grid-column: span 5;
 }
 
 .leftctrl {
-    grid-column: span 3;
+  grid-column: span 3;
 }
 
 .command {
-    grid-column: span 3;
-    font-size: 14px;
+  grid-column: span 3;
+  font-size: 14px;
 }
 
 .space {
-    grid-column: span 11;
+  grid-column: span 11;
 }
 
 .subkey {
-    background-color: white;
-    border: 2px solid black;
-    border-radius: 5px;
-    font-size: 20px;
-    height: 28px;
-    text-align: center;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  font-size: 20px;
+  height: 28px;
+  text-align: center;
 }
 
 .subkey:hover {
@@ -85,17 +85,33 @@ body * {
 }
 
 .group {
-    grid-column: span 2;
-    text-align: center;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-between;
+  grid-column: span 2;
+  text-align: center;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
 }
 
 .up-arrow {
-    transform: rotate(-90deg); /* Rotation pour la flèche vers le haut */
-  }
-  
-  .down-arrow {
-    transform: rotate(90deg); /* Rotation pour la flèche vers le bas */
-  }
+  transform: rotate(-90deg); /* Rotation pour la flèche vers le haut */
+}
+
+.down-arrow {
+  transform: rotate(90deg); /* Rotation pour la flèche vers le bas */
+}
+
+.hidden-keys {
+  padding: 20px;
+  background-color: rgb(197, 197, 197);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 30px);
+  grid-auto-rows: 60px;
+  grid-gap: 5px;
+  justify-content: center; /* Center content when there's extra space */
+}
+
+.snackbar{
+  background-color: red;
+  color: white;
+}
