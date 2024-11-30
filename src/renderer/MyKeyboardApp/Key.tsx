@@ -13,14 +13,14 @@ interface KeyProps {
   withColors: boolean;
 }
 
-const Key: React.FC<KeyProps> = ({
+function Key({
   isDisabled,
   isSelected,
   keyData,
   withColors,
   hidden,
   onKeyPress,
-}) => {
+}: Readonly<KeyProps>) {
   const renderHiddenLabel = () => <KeyHiddenLabel keyData={keyData} />;
 
   const renderMultiLineLabel = () => <KeyMultiLineLabel keyData={keyData} />;
@@ -60,8 +60,8 @@ const Key: React.FC<KeyProps> = ({
 
   const renderDefaultKey = () => (
     <Box display="flex">
-      {keyData.label.split('\n').map((line: string, index: number) => (
-        <div key={`${keyData.id}-${index}`}>{line}</div>
+      {keyData.label.split('\n').map((line: string) => (
+        <div key={`${keyData.id}}`}>{line}</div>
       ))}
     </Box>
   );
@@ -103,6 +103,6 @@ const Key: React.FC<KeyProps> = ({
       {renderLabel()}
     </Button>
   );
-};
+}
 
 export default Key;

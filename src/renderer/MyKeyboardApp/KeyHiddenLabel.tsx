@@ -6,19 +6,21 @@ interface KeyHiddenLabelProps {
   keyData: IKey;
 }
 
-const KeyHiddenLabel: React.FC<KeyHiddenLabelProps> = ({ keyData }) => (
-  <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    height="100%"
-    width="100%"
-    sx={{ color: 'transparent' }}
-  >
-    {keyData.label.split('\n').map((line: string, index: number) => (
-      <div key={`${keyData.id}-hidden-${index}`}>{line}</div>
-    ))}
-  </Box>
-);
+function KeyHiddenLabel({ keyData }: Readonly<KeyHiddenLabelProps>) {
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100%"
+      width="100%"
+      sx={{ color: 'transparent' }}
+    >
+      {keyData.label.split('\n').map((line: string) => (
+        <div key={`${keyData.id}-hidden`}>{line}</div>
+      ))}
+    </Box>
+  );
+}
 
 export default KeyHiddenLabel;

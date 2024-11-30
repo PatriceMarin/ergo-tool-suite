@@ -70,7 +70,7 @@ function MyKeyboard() {
         setHiddenKeys(selectedKeys);
         break;
       case '4':
-        setHiddenKeys(shuffleArray([...keys]));
+        setHiddenKeys(shuffleArray(keys.filter((key) => !key.excluded)));
         break;
     }
 

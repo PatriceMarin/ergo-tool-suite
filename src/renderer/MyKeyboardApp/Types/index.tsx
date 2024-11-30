@@ -2,6 +2,7 @@ import { ButtonPropsColorOverrides } from '@mui/material/Button';
 
 export interface IKey {
   id: string;
+  excluded?: boolean;
   label: string;
   gridArea?: string;
   rows?: number;
