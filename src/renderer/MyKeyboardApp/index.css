@@ -1,8 +1,3 @@
-body * {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 .keyboard-base {
   max-width: 1085px;
   padding: 20px;
@@ -102,13 +97,12 @@ body * {
 
 .hidden-keys {
   padding: 20px;
-  background-color: rgb(197, 197, 197);
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(auto-fit, 30px);
   grid-auto-rows: 60px;
   grid-gap: 5px;
-  justify-content: center; /* Center content when there's extra space */
+  justify-content: left; /* Center content when there's extra space */
 }
 
 .snackbar{

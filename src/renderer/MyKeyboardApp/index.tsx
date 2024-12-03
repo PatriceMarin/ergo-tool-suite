@@ -2,32 +2,31 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid2';
 import {
   Box,
-  Paper,
   Snackbar,
   SnackbarCloseReason,
   SnackbarContent,
-  Typography,
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Fireworks from 'react-canvas-confetti/dist/presets/fireworks';
 import { TConductorInstance } from 'react-canvas-confetti/dist/types';
+import { TCanvasConfettiInstance } from 'react-canvas-confetti/src/types/normalization';
 import ControlBar from './ControlBar';
 import HiddenKeys from './HiddenKeys';
 import Key from './Key';
 import keysData from './frenchKeyboardConfig.json';
 import './index.css';
 import { IKey, IKeyMatch } from './Types';
-import { TCanvasConfettiInstance } from 'react-canvas-confetti/src/types/normalization';
 
 function MyKeyboard() {
+  const keys: IKey[] = keysData as IKey[];
+
   const [level, setLevel] = useState<string>('');
   const [withColors, setWithColors] = useState<boolean>(false);
   const [hiddenKeys, setHiddenKeys] = useState<IKey[]>([]);
   const [revealedKeys, setRevealedKeys] = useState<IKey[]>([]);
-  const keys: IKey[] = keysData as IKey[];
-  const [keyboardDisabled, setKeyboardDisabled] = useState<boolean>(true);
+  const [keyboardDisabled, setKeyboardDisabled] = useState<boolean>(false);
   const [selectedKeyMatch, setSelectedKeyMatch] = useState<IKeyMatch>({
     selectedKey: null,
     selectedKeyboardKey: null,
@@ -47,14 +46,13 @@ function MyKeyboard() {
   const startMyKeyboardSession = () => {
     let selectedKeys: IKey[];
 
-    switch (level) {
-      case '1':
-        selectedKeys = shuffleArray(
-          keys.filter((key) => /^[a-z0-9&é"'(§è!çà)]$/i.test(key.id)),
-        ).slice(0, 4);
+    setSelectedKeyMatch({
+      selectedKey: null,
+      selectedKeyboardKey: null,
+      matched: null,
+    });
 
-        setHiddenKeys(selectedKeys);
-        break;
+    switch (level) {
       case '2':
         selectedKeys = shuffleArray(
           keys.filter((key) => /^[a-z0-9&é"'(§è!çà)]$/i.test(key.id)),
@@ -72,27 +70,31 @@ function MyKeyboard() {
       case '4':
         setHiddenKeys(shuffleArray(keys.filter((key) => !key.excluded)));
         break;
+      default:
+        selectedKeys = shuffleArray(
+          keys.filter((key) => /^[a-z0-9&é"'(§è!çà)]$/i.test(key.id)),
+        ).slice(0, 4);
+
+        setHiddenKeys(selectedKeys);
+        break;
     }
 
     setKeyboardDisabled(false);
     setRevealedKeys([]);
   };
 
-  const applyKeyMatch = (selectedKeyMatch: IKeyMatch) => {
+  const applyKeyMatch = (keyMatch: IKeyMatch) => {
     if (
-      selectedKeyMatch.selectedKeyboardKey === null ||
-      selectedKeyMatch.selectedKey === null
+      keyMatch.selectedKeyboardKey === null ||
+      keyMatch.selectedKey === null
     ) {
       return;
     }
 
-    if (
-      selectedKeyMatch.selectedKeyboardKey.id ===
-      selectedKeyMatch.selectedKey.id
-    ) {
-      setRevealedKeys([...revealedKeys, selectedKeyMatch.selectedKey]);
+    if (keyMatch.selectedKeyboardKey.id === keyMatch.selectedKey.id) {
+      setRevealedKeys([...revealedKeys, keyMatch.selectedKey]);
       setHiddenKeys(
-        hiddenKeys.filter((k) => k !== selectedKeyMatch.selectedKeyboardKey),
+        hiddenKeys.filter((k) => k !== keyMatch.selectedKeyboardKey),
       );
 
       setSelectedKeyMatch({
@@ -114,9 +116,8 @@ function MyKeyboard() {
     if (hiddenKeys.length === 0 && revealedKeys.length > 0) {
       controller.current?.run({ speed: 3 });
 
-      setTimeout(function () {
+      setTimeout(() => {
         controller.current?.stop();
-        setKeyboardDisabled(true);
       }, 5000);
     }
   }, [selectedKeyMatch, hiddenKeys, revealedKeys]);
@@ -169,9 +170,9 @@ function MyKeyboard() {
   };
 
   return (
-    <Box>
+    <>
       <Fireworks onInit={onInitHandler} />
-      <Grid container spacing={2} sx={{ p: 2, backgroundColor: 'white' }}>
+      <Grid container>
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={selectedKeyMatch.matched === false}
@@ -191,17 +192,7 @@ function MyKeyboard() {
         </Snackbar>
 
         <Grid size={12}>
-          <Typography variant="h4" color="black">
-            Découvrir mon clavier
-          </Typography>
-        </Grid>
-
-        <Grid size={12}>
-          <Paper
-            elevation={3}
-            component="section"
-            sx={{ p: 2, backgroundColor: 'white' }}
-          >
+          <Box sx={{ p: 2 }}>
             <ControlBar
               level={level}
               withColors={withColors}
@@ -209,7 +200,7 @@ function MyKeyboard() {
               onWithColorsChange={handleWithColorsChange}
               onStart={startMyKeyboardSession}
             />
-          </Paper>
+          </Box>
         </Grid>
 
         {hiddenKeys.length > 0 && (
@@ -223,12 +214,10 @@ function MyKeyboard() {
         )}
 
         <Grid size={12}>
-          <Paper
-            elevation={0}
+          <Box
             component="section"
             sx={{
               p: 2,
-              backgroundColor: 'white',
               justifyContent: 'center',
               display: 'flex',
             }}
@@ -246,10 +235,10 @@ function MyKeyboard() {
                 />
               ))}
             </Box>
-          </Paper>
+          </Box>
         </Grid>
       </Grid>
-    </Box>
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Box } from '@mui/material';
+import { Button, Box, ButtonPropsColorOverrides } from '@mui/material';
 import KeyHiddenLabel from './KeyHiddenLabel';
 import KeyMultiLineLabel from './KeyMultiLineLabel';
 import { IKey } from './Types';
@@ -24,6 +24,18 @@ function Key({
   const renderHiddenLabel = () => <KeyHiddenLabel keyData={keyData} />;
 
   const renderMultiLineLabel = () => <KeyMultiLineLabel keyData={keyData} />;
+
+  const getColor = (): keyof ButtonPropsColorOverrides => {
+    if (withColors) {
+      return keyData.color ?? 'customBlack';
+    }
+
+    if (isSelected) {
+      return 'customWhite';
+    }
+
+    return 'customBlack';
+  };
 
   const renderArrowGroup = () => (
     <Box
@@ -80,17 +92,14 @@ function Key({
     return renderArrowGroup();
   }
 
+  // Utiliser la fonction getColor pour obtenir la couleur
+  const color = getColor();
+
   return (
     <Button
       disabled={isDisabled}
       variant="contained"
-      color={
-        withColors
-          ? (keyData.color ?? 'customBlack')
-          : isSelected
-            ? 'customWhite'
-            : 'customBlack'
-      }
+      color={color}
       className={`key ${keyData.id}`}
       sx={{
         gridColumn: keyData.columns ? `span ${keyData.columns}` : undefined,

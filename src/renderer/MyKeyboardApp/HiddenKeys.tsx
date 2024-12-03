@@ -1,6 +1,6 @@
 import React from 'react';
 import Box from '@mui/material/Box';
-import { Paper, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { IKey } from './Types';
 import Key from './Key';
 
@@ -16,7 +16,7 @@ const hiddenKeysComponent = ({
   onRevealKey,
 }: HiddenKeysProps) => {
   return (
-    <Paper elevation={3} sx={{ p: 2 }}>
+    <Box sx={{ p: 2 }}>
       <Typography variant="subtitle1">
         Retrouver ces touches sur le clavier :
       </Typography>
@@ -33,7 +33,7 @@ const hiddenKeysComponent = ({
           />
         ))}
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

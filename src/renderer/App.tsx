@@ -1,24 +1,66 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import MyKeyboardApp from './MyKeyboardApp';
-import TypingApp from './TypingApp';
-// import VirtualKeyboard from './VirtualKeyboard';
-import ResponsiveAppBar from './ResponsiveAppBar';
 import './App.css';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Container } from '@mui/material';
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import AdminLayout from './components/AdminLayout';
+import MyKeyboardApp from './MyKeyboardApp';
+import TypingApp from './TypingApp';
 
-// Define a custom theme
-let theme = createTheme({
-  palette: {
-    customWhite: {
-      main: '#000000',
-      light: '#FFFFFF', // Code couleur pour 'custom'
-      contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
+const theme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: 'data-toolpad-color-scheme',
+  },
+  colorSchemes: {
+    light: {
+      palette: {
+        mode: 'light',
+        primary: {
+          main: '#2c8783',
+        },
+        secondary: {
+          main: '#cc93d8',
+          contrastText: 'rgba(255,255,255,0.87)',
+        },
+        background: {
+          default: '#F9F9FE',
+          paper: '#EEEEF9',
+        },
+        text: {
+          primary: 'rgba(0,0,0,0.87)',
+          secondary: 'rgba(0,0,0,0.6)',
+          disabled: 'rgba(183,183,183,0.38)',
+        },
+        customWhite: {
+          main: '#000000',
+          light: '#FFFFFF', // Code couleur pour 'custom'
+          contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
+        },
+        customBlack: {
+          main: '#FFFFFF',
+          light: '#000000', // Code couleur pour 'custom'
+          contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
+        },
+        flushyYellow: {
+          main: '#E3D026',
+          light: '#E9DB5D',
+          dark: '#A29415',
+          contrastText: '#FFFFFF',
+        },
+      },
     },
-    customBlack: {
-      main: '#FFFFFF',
-      light: '#000000', // Code couleur pour 'custom'
-      contrastText: '#000000', // Couleur du texte contrastant pour 'custom'
+    dark: {
+      palette: {
+        mode: 'dark',
+        primary: {
+          main: '#5893df',
+        },
+        secondary: {
+          main: '#2ec5d3',
+        },
+        background: {
+          default: '#192231',
+          paper: '#24344d',
+        },
+      },
     },
   },
   typography: {
@@ -26,30 +68,17 @@ let theme = createTheme({
   },
 });
 
-theme = createTheme(theme, {
-  palette: {
-    flushyYellow: {
-      main: '#E3D026',
-      light: '#E9DB5D',
-      dark: '#A29415',
-      contrastText: '#FFFFFF',
-    },
-  },
-});
-
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <Container maxWidth={false} disableGutters>
-          <ResponsiveAppBar />
-          <Routes>
-            <Route path="/typing" element={<TypingApp />} />
-            <Route path="/keyboard" element={<MyKeyboardApp />} />
-            {/* <Route path="/help" element={<VirtualKeyboard />} /> */}
-          </Routes>
-        </Container>
-      </Router>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<AdminLayout />}>
+            <Route path="/myKeyboardApp" element={<MyKeyboardApp />} />
+            <Route path="/typingApp" element={<TypingApp />} />
+          </Route>
+        </Routes>
+      </HashRouter>
     </ThemeProvider>
   );
 }
