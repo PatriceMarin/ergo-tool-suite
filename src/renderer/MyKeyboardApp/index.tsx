@@ -18,6 +18,7 @@ import Key from './Key';
 import keysData from './frenchKeyboardConfig.json';
 import './index.css';
 import { IKey, IKeyMatch } from './Types';
+import MyBreadcrumbs from '../components/MyBreadcrumbs';
 
 function MyKeyboard() {
   const keys: IKey[] = keysData as IKey[];
@@ -192,6 +193,7 @@ function MyKeyboard() {
         </Snackbar>
 
         <Grid size={12}>
+          <MyBreadcrumbs title="Mon Clavier" />
           <Box sx={{ p: 2 }}>
             <ControlBar
               level={level}

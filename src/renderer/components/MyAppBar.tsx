@@ -1,38 +1,3 @@
-// import React, { useState } from 'react';
-// import {
-//   AppBar,
-//   Toolbar,
-//   Typography,
-//   IconButton,
-//   Badge,
-//   Box,
-// } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
-// import NotificationsIcon from '@mui/icons-material/Notifications';
-
-// function MyAppBar() {
-//   return (
-//     <AppBar position="fixed">
-//       <Toolbar>
-//         <IconButton edge="start">
-//           <MenuIcon />
-//         </IconButton>
-//         <Typography variant="h6" noWrap component="div">
-//           Dashboard
-//         </Typography>
-//         <Box sx={{ flexGrow: 1 }} />
-//         <IconButton color="inherit">
-//           <Badge badgeContent={4} color="secondary">
-//             <NotificationsIcon />
-//           </Badge>
-//         </IconButton>
-//       </Toolbar>
-//     </AppBar>
-//   );
-// }
-
-// export default MyAppBar;
-
 import React from 'react';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';

@@ -7,10 +7,16 @@ import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Stack from '@mui/material/Stack';
-import { Paper, Typography, TextField } from '@mui/material';
+import { Paper, Typography, TextField, Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import {
+  TCanvasConfettiInstance,
+  TConductorInstance,
+} from 'react-canvas-confetti/dist/types';
+import Fireworks from 'react-canvas-confetti/dist/presets/fireworks';
 import { Lesson } from './Lesson';
 import { Lessons } from './Lessons';
+import MyBreadcrumbs from '../components/MyBreadcrumbs';
 
 // Simulated lessons data
 const mockedLessons: Lessons = {
@@ -73,7 +79,7 @@ const mockedLessons: Lessons = {
   },
 };
 
-const TypingApp = () => {
+function TypingApp() {
   const [level, setLevel] = useState<string>('');
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -82,9 +88,7 @@ const TypingApp = () => {
   const [globalErrorCount, setGlobalErrorCount] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
-    null,
-  );
+  const [timerInterval, setTimerInterval] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState<{
     errors: number;
     time: number;
@@ -92,6 +96,15 @@ const TypingApp = () => {
 
   // Référence pour le champ TextField
   const textFieldRef = useRef<HTMLInputElement>(null);
+
+  const controller = React.useRef<TConductorInstance>();
+
+  const onInitHandler = (params: {
+    confetti: TCanvasConfettiInstance;
+    conductor: TConductorInstance;
+  }): void => {
+    controller.current = params.conductor;
+  };
 
   useEffect(() => {
     if (level) {
@@ -271,149 +284,135 @@ const TypingApp = () => {
   };
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        p: 2,
-        backgroundColor: 'white',
-        borderRadius: '16px',
-      }}
-    >
-      <Grid size={12}>
-        <Typography variant="h4" component="h5" color="black">
-          Outil d'aide à la frappe
-        </Typography>
-      </Grid>
-      <Grid size={12}>
-        <Paper
-          elevation={3}
-          component="section"
-          sx={{ p: 2, backgroundColor: 'white' }}
-        >
-          <Stack
-            direction="row"
-            divider={<Divider orientation="vertical" flexItem />}
-            spacing={2}
-          >
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="select-level">Niveau</InputLabel>
-              <Select
-                labelId="select-level"
-                id="level-select"
-                value={level}
-                onChange={handleLevelChange}
-                label="Niveau"
-              >
-                <MenuItem value={1}>Débutant</MenuItem>
-                <MenuItem value={2}>Intermédiaire</MenuItem>
-                <MenuItem value={3}>Expert</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-              <InputLabel id="select-lesson">Leçons</InputLabel>
-              <Select
-                labelId="select-lesson"
-                id="lesson-select"
-                value={selectedLesson?.id || ''}
-                onChange={handleLessonChange}
-                label="Leçon"
-                disabled={!level}
-              >
-                {lessons.map((lesson) => (
-                  <MenuItem key={lesson.id} value={lesson.id}>
-                    {lesson.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </Paper>
-      </Grid>
-
-      {selectedLesson && (
+    <>
+      <Fireworks onInit={onInitHandler} />
+      <Grid container>
         <Grid size={12}>
-          <Paper elevation={0} sx={{ p: 2 }}>
-            <Typography variant="h5">Leçon: {selectedLesson.title}</Typography>
-            <Grid
-              container
+          <MyBreadcrumbs title="Aide à la frappe" />
+          <Box sx={{ p: 2 }}>
+            <Stack
+              direction="row"
+              divider={<Divider orientation="vertical" flexItem />}
               spacing={2}
-              sx={{
-                justifyContent: 'space-evenly',
-                alignItems: 'stretch',
-              }}
             >
-              <Grid size={6}>
-                <Paper elevation={0} sx={{ p: 2 }}>
-                  <Typography variant="h6">
-                    {renderColoredInput(selectedLesson.content, userInput)}
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid size={6}>
-                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                  <Button
-                    variant="contained"
-                    size="large"
-                    endIcon={<PlayArrowIcon />}
-                    disabled={
-                      !selectedLesson || isTyping || sessionData !== null
-                    }
-                    onClick={startTypingSession}
-                  >
-                    Démarrer
-                  </Button>
-                </FormControl>
-                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                  <Button
-                    variant="contained"
-                    size="large"
-                    endIcon={<PlayArrowIcon />}
-                    disabled={!selectedLesson || isTyping || !sessionData}
-                    onClick={startTypingSession}
-                  >
-                    Recommencer
-                  </Button>
-                </FormControl>
-                <TextField
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  value={userInput}
-                  onChange={handleInputChange}
-                  placeholder="Commencez à taper ici..."
-                  error={errorCount > 0}
-                  helperText={`Erreurs: ${errorCount}`}
-                  disabled={!isTyping}
-                  inputRef={textFieldRef} // Ajoute la référence ici
-                />
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      )}
+              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                <InputLabel id="select-level">Niveau</InputLabel>
+                <Select
+                  labelId="select-level"
+                  id="level-select"
+                  value={level}
+                  onChange={handleLevelChange}
+                  label="Niveau"
+                >
+                  <MenuItem value={1}>Débutant</MenuItem>
+                  <MenuItem value={2}>Intermédiaire</MenuItem>
+                  <MenuItem value={3}>Expert</MenuItem>
+                </Select>
+              </FormControl>
 
-      {sessionData && (
-        <Grid size={12}>
-          <Paper elevation={0} sx={{ p: 2 }}>
-            {isComplete && (
-              <Typography variant="h6" color="success.main">
-                Félicitations, vous avez réussi !
-              </Typography>
-            )}
-            <Typography variant="body1">
-              Nombre d'erreurs: {sessionData.errors}
-            </Typography>
-            <Typography variant="body1">
-              Temps écoulé: {sessionData.time}s
-            </Typography>
-          </Paper>
+              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                <InputLabel id="select-lesson">Leçons</InputLabel>
+                <Select
+                  labelId="select-lesson"
+                  id="lesson-select"
+                  value={selectedLesson?.id || ''}
+                  onChange={handleLessonChange}
+                  label="Leçon"
+                  disabled={!level}
+                >
+                  {lessons.map((lesson) => (
+                    <MenuItem key={lesson.id} value={lesson.id}>
+                      {lesson.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+          </Box>
         </Grid>
-      )}
-    </Grid>
+
+        {selectedLesson && (
+          <Grid size={12}>
+            <Box sx={{ p: 2 }}>
+              <Grid
+                container
+                spacing={2}
+                sx={{
+                  justifyContent: 'space-evenly',
+                  alignItems: 'stretch',
+                }}
+              >
+                <Grid size={6}>
+                  <Box sx={{ p: 2 }}>
+                    <Typography variant="h6">
+                      {renderColoredInput(selectedLesson.content, userInput)}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={6}>
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <Button
+                      variant="contained"
+                      size="large"
+                      endIcon={<PlayArrowIcon />}
+                      disabled={
+                        !selectedLesson || isTyping || sessionData !== null
+                      }
+                      onClick={startTypingSession}
+                    >
+                      Démarrer
+                    </Button>
+                  </FormControl>
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <Button
+                      variant="contained"
+                      size="large"
+                      endIcon={<PlayArrowIcon />}
+                      disabled={!selectedLesson || isTyping || !sessionData}
+                      onClick={startTypingSession}
+                    >
+                      Recommencer
+                    </Button>
+                  </FormControl>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    value={userInput}
+                    onChange={handleInputChange}
+                    placeholder="Commencez à taper ici..."
+                    error={errorCount > 0}
+                    helperText={`Erreurs: ${errorCount}`}
+                    disabled={!isTyping}
+                    inputRef={textFieldRef} // Ajoute la référence ici
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+        )}
+
+        {sessionData && (
+          <Grid size={12}>
+            <Paper elevation={0} sx={{ p: 2 }}>
+              {isComplete && (
+                <Typography variant="h6" color="success.main">
+                  Félicitations, vous avez réussi !
+                </Typography>
+              )}
+              <Typography variant="body1">
+                Nombre d'erreurs: {sessionData.errors}
+              </Typography>
+              <Typography variant="body1">
+                Temps écoulé: {sessionData.time}s
+              </Typography>
+            </Paper>
+          </Grid>
+        )}
+      </Grid>
+    </>
   );
-};
+}
 
 export default TypingApp;

@@ -130,12 +130,15 @@ export default function MyDrawer() {
               key={menu.path}
               component={Link}
               disablePadding
-              sx={{ display: 'block' }}
+              sx={{
+                display: 'block',
+              }}
               to={`/${menu.path}`}
             >
               <ListItemButton
                 sx={[
                   {
+                    color: 'secondary.main',
                     minHeight: 48,
                     px: 2.5,
                   },
