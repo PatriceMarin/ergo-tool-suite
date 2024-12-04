@@ -107,6 +107,11 @@ export default function MyDrawer() {
       path: 'typingApp',
       icon: <SpellcheckIcon />,
     },
+    {
+      title: 'Aide à la frappe - 2',
+      path: 'typingApp-v2',
+      icon: <SpellcheckIcon />,
+    },
   ];
 
   return (
