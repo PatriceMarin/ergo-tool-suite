@@ -18,7 +18,7 @@ const theme = createTheme({
           main: '#8cb5cb',
         },
         secondary: {
-          main: 'rgba(0,0,0,0.87)',
+          main: '#c9dfec',
           contrastText: 'rgba(255,255,255,0.87)',
         },
         background: {
@@ -59,7 +59,7 @@ const theme = createTheme({
         },
         background: {
           default: '#192231',
-          paper: '#24344d',
+          paper: '#192231',
         },
       },
     },

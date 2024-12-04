@@ -5,14 +5,12 @@ import {
   Alert,
   AlertTitle,
   Button,
-  Divider,
   FormControl,
   Paper,
   Stack,
   TextField,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import KeyboardIcon from '@mui/icons-material/Keyboard';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import currentTime from '../utils/time'; // Assurez-vous que ces utilitaires existent
 import words from '../utils/words'; // Assurez-vous que ces utilitaires existent
@@ -168,9 +166,6 @@ function Typing() {
                 />
               </FormControl>
             )}
-
-            {/* <Typography variant="h6">Mots par minute {wpm}</Typography>
-            <Typography variant="h6">Précision {accuracy}%</Typography> */}
           </Stack>
         </Box>
       </Grid>
@@ -179,8 +174,8 @@ function Typing() {
         {isGameActive && (
           <Paper elevation={3} sx={{ p: 6 }}>
             <Typography variant="h4">
-              <Box component="span" sx={{ color: 'primary.main' }}>
-                {(leftPadding + outgoingChars).slice(-50)}
+              <Box component="span" sx={{ color: 'secondary.main' }}>
+                {(leftPadding + outgoingChars).slice(-30)}
               </Box>
               <Box
                 component="span"
@@ -190,7 +185,7 @@ function Typing() {
               >
                 {currentChar}
               </Box>
-              <Box component="span">{incomingChars.substr(0, 50)}</Box>
+              <Box component="span">{incomingChars.substr(0, 30)}</Box>
             </Typography>
           </Paper>
         )}
