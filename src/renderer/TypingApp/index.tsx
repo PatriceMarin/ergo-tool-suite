@@ -87,8 +87,10 @@ function TypingApp() {
   const [errorCount, setErrorCount] = useState<number>(0);
   const [globalErrorCount, setGlobalErrorCount] = useState<number>(0);
   const [timer, setTimer] = useState<number>(0);
+  const [timeInterval, setTimeInterval] = useState<
+    ReturnType<typeof setTimeout> | number
+  >(0);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [timerInterval, setTimerInterval] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState<{
     errors: number;
     time: number;
@@ -129,6 +131,19 @@ function TypingApp() {
     setSessionData(null);
   };
 
+  const stopTypingSession = () => {
+    // Reset the timer value to 0
+    setTimer(0);
+    // Clear the interval to stop the timer
+    clearInterval(timeInterval);
+
+    setIsTyping(false);
+    setSessionData({
+      errors: globalErrorCount,
+      time: timer,
+    });
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setUserInput(value);
@@ -140,54 +155,26 @@ function TypingApp() {
     const userWords = value.split(' ');
 
     let liveErrors = 0; // Erreurs en temps réel
-    let tempGlobalErrors = globalErrorCount; // Pour mémoriser les erreurs globales
-    let isCorrecting = false; // Pour savoir si l'utilisateur est en phase de correction
 
     // Comparer les mots jusqu'à la longueur de la saisie utilisateur
     const minLength = Math.min(originalWords.length, userWords.length);
 
-    for (let i = 0; i < minLength; i++) {
+    for (let i = 0; i < minLength; i += 1) {
       const originalWord = originalWords[i];
       const userWord = userWords[i];
 
-      // Si le mot utilisateur est plus court que le mot attendu, on considère cela comme une correction
-      if (userWord.length < originalWord.length) {
-        isCorrecting = true; // L'utilisateur est en train de corriger
-      }
-
       if (userWord.length <= originalWord.length) {
         // Si le mot saisi est partiel, on compare les caractères partiellement
-        for (let j = 0; j < userWord.length; j++) {
+        for (let j = 0; j < userWord.length; j += 1) {
           if (userWord[j] !== originalWord[j]) {
-            liveErrors++;
-
-            // Ajouter une erreur globale seulement si ce n'est pas une correction active
-            if (!isCorrecting) {
-              tempGlobalErrors++;
-            }
+            liveErrors += 1;
           }
         }
       } else {
         // Si le mot est plus long que prévu, on compte ça comme une erreur entière
-        liveErrors++;
-        if (!isCorrecting) {
-          tempGlobalErrors++;
-        }
-      }
-
-      // Reset la correction une fois le mot complet est atteint
-      if (userWord.length === originalWord.length) {
-        isCorrecting = false; // Correction terminée
+        liveErrors += 1;
       }
     }
-
-    // // Si l'utilisateur a écrit plus de mots que prévu (par exemple avec des espaces en trop)
-    // if (userWords.length > originalWords.length) {
-    //   liveErrors += userWords.length - originalWords.length;
-    //   if (!isCorrecting) {
-    //     tempGlobalErrors += userWords.length - originalWords.length;
-    //   }
-    // }
 
     // Mettre à jour les erreurs en temps réel
     setErrorCount(liveErrors);
@@ -216,23 +203,13 @@ function TypingApp() {
       textFieldRef.current?.focus();
     }, 100);
 
-    const intervalId = setInterval(() => {
-      setTimer((prevTimer) => prevTimer + 1);
-    }, 1000);
-    setTimerInterval(intervalId);
-  };
-
-  const stopTypingSession = () => {
-    setIsTyping(false);
-    setSessionData({
-      errors: globalErrorCount,
-      time: timer,
-    });
-
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      setTimerInterval(null);
-    }
+    // Use setInterval to update the timer every 1000 milliseconds (1 second)
+    setTimeInterval(
+      setInterval(() => {
+        // Update the timer by incrementing the previous value by 1
+        setTimer((prev) => prev + 1);
+      }, 1000),
+    );
   };
 
   const isComplete = userInput === selectedLesson?.content;
@@ -243,7 +220,7 @@ function TypingApp() {
 
     const renderedText = [];
 
-    for (let i = 0; i < originalWords.length; i++) {
+    for (let i = 0; i < originalWords.length; i += 1) {
       const originalWord = originalWords[i] || '';
       const inputWord = inputWords[i] || '';
 
@@ -256,7 +233,7 @@ function TypingApp() {
         );
       } else {
         // Comparer chaque caractère du mot si le mot est partiel ou incorrect
-        for (let j = 0; j < originalWord.length; j++) {
+        for (let j = 0; j < originalWord.length; j += 1) {
           const originalChar = originalWord[j] || '';
           const inputChar = inputWord[j] || '';
 
@@ -343,11 +320,11 @@ function TypingApp() {
                 }}
               >
                 <Grid size={6}>
-                  <Box sx={{ p: 2 }}>
+                  <Paper sx={{ p: 2 }}>
                     <Typography variant="h6">
                       {renderColoredInput(selectedLesson.content, userInput)}
                     </Typography>
-                  </Box>
+                  </Paper>
                 </Grid>
                 <Grid size={6}>
                   <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
@@ -402,7 +379,7 @@ function TypingApp() {
                 </Typography>
               )}
               <Typography variant="body1">
-                Nombre d'erreurs: {sessionData.errors}
+                Erreurs: {sessionData.errors}
               </Typography>
               <Typography variant="body1">
                 Temps écoulé: {sessionData.time}s
