@@ -9,6 +9,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import SpellcheckIcon from '@mui/icons-material/Spellcheck';
+import SpeedIcon from '@mui/icons-material/Speed';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 
 import {
@@ -108,9 +109,9 @@ export default function MyDrawer() {
       icon: <SpellcheckIcon />,
     },
     {
-      title: 'Aide à la frappe - 2',
-      path: 'typingApp-v2',
-      icon: <SpellcheckIcon />,
+      title: 'La Vitesse au clavier',
+      path: 'speedTypingApp',
+      icon: <SpeedIcon />,
     },
   ];
 

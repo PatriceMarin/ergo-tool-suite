@@ -4,7 +4,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import AdminLayout from './components/AdminLayout';
 import MyKeyboardApp from './MyKeyboardApp';
 import TypingApp from './TypingApp';
-import TypingAppV2 from './TypingApp-v2';
+import SpeedTypingApp from './SpeedTypingApp/SpeedTypingApp';
 
 const theme = createTheme({
   cssVariables: {
@@ -77,7 +77,7 @@ export default function App() {
           <Route path="/" element={<AdminLayout />}>
             <Route path="/myKeyboardApp" element={<MyKeyboardApp />} />
             <Route path="/typingApp" element={<TypingApp />} />
-            <Route path="/typingApp-v2" element={<TypingAppV2 />} />
+            <Route path="/speedTypingApp" element={<SpeedTypingApp />} />
           </Route>
         </Routes>
       </HashRouter>

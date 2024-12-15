@@ -1,395 +1,204 @@
-import React, { useState, useEffect, useRef } from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import Stack from '@mui/material/Stack';
-import { Paper, Typography, TextField, Box } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import React, { useState, useEffect, useCallback } from 'react';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import {
-  TCanvasConfettiInstance,
-  TConductorInstance,
-} from 'react-canvas-confetti/dist/types';
-import Fireworks from 'react-canvas-confetti/dist/presets/fireworks';
-import { Lesson } from './Lesson';
-import { Lessons } from './Lessons';
+  Alert,
+  AlertTitle,
+  Button,
+  FormControl,
+  Paper,
+  Stack,
+  TextField,
+} from '@mui/material';
+import Grid from '@mui/material/Grid2';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import currentTime from '../utils/time'; // Assurez-vous que ces utilitaires existent
+import { getWordsSeparatedBySpace } from '../utils/words'; // Assurez-vous que ces utilitaires existent
+import useKeyPress from '../hooks/useKeyPress'; // Assurez-vous que ce hook existe
 import MyBreadcrumbs from '../components/MyBreadcrumbs';
 
-// Simulated lessons data
-const mockedLessons: Lessons = {
-  lessons: {
-    '1': [
-      {
-        id: '1',
-        title: '1. Basique - Leçon 1',
-        content: 'chat soleil avion',
-      },
-      {
-        id: '2',
-        title: '1. Basique - Leçon 2',
-        content: 'pomme rouge chien',
-      },
-      {
-        id: '3',
-        title: '1. Basique - Leçon 3',
-        content: 'école voiture dessert',
-      },
+const initialWords = getWordsSeparatedBySpace();
+
+function Typing() {
+  const [leftPadding, setLeftPadding] = useState(
+    new Array(20).fill(' ').join(''),
+  );
+  const [outgoingChars, setOutgoingChars] = useState('');
+  const [currentChar, setCurrentChar] = useState(initialWords.charAt(0));
+  const [incomingChars, setIncomingChars] = useState(initialWords.substr(1));
+  const [wrongChar, setWrongChar] = useState<boolean>(false);
+
+  const [startTime, setStartTime] = useState<number | undefined>(undefined);
+  const [wordCount, setWordCount] = useState(0);
+  const [accuracy, setAccuracy] = useState('');
+  const [typedChars, setTypedChars] = useState('');
+  const [minutes, setMinutes] = useState(1);
+  const [seconds, setSeconds] = useState(0);
+  const [isGameActive, setIsGameActive] = useState(false);
+
+  const startGame = useCallback(() => {
+    setLeftPadding(new Array(20).fill(' ').join(''));
+    setOutgoingChars('');
+    setCurrentChar(initialWords.charAt(0));
+    setIncomingChars(initialWords.substr(1));
+
+    setStartTime(undefined);
+    setWordCount(0);
+    setAccuracy('');
+    setTypedChars('');
+    setMinutes(1); // Temps défini pour le jeu
+    setSeconds(0); // Temps défini pour le jeu
+    setIsGameActive(true);
+  }, []);
+
+  const handleKeyPress = useCallback(
+    (key: string) => {
+      if (!isGameActive) return;
+
+      let updatedOutgoingChars = outgoingChars;
+      let updatedIncomingChars = incomingChars;
+
+      if (!startTime) {
+        setStartTime(currentTime());
+      }
+
+      if (key === currentChar) {
+        if (leftPadding.length > 0) {
+          setLeftPadding(leftPadding.substring(1));
+        }
+
+        updatedOutgoingChars += currentChar;
+        setOutgoingChars(updatedOutgoingChars);
+        setCurrentChar(incomingChars.charAt(0));
+        setWrongChar(false);
+
+        updatedIncomingChars = incomingChars.substring(1);
+
+        if (updatedIncomingChars.split(' ').length < 10) {
+          updatedIncomingChars += ` ${getWordsSeparatedBySpace()}`;
+        }
+        setIncomingChars(updatedIncomingChars);
+
+        if (incomingChars.charAt(0) === ' ') {
+          setWordCount((prevCount) => prevCount + 1);
+        }
+      } else {
+        setWrongChar(true);
+      }
+
+      const updatedTypedChars = typedChars + key;
+      setTypedChars(updatedTypedChars);
+      setAccuracy(
+        (
+          (updatedOutgoingChars.length * 100) /
+          updatedTypedChars.length
+        ).toFixed(2),
+      );
+    },
+    [
+      incomingChars,
+      outgoingChars,
+      currentChar,
+      isGameActive,
+      startTime,
+      typedChars,
+      leftPadding,
     ],
-    '2': [
-      {
-        id: '1',
-        title: '2. Intermédiaire - Leçon 1',
-        content: 'La nature est pleine de merveilles à explorer.',
-      },
-      {
-        id: '2',
-        title: '2. Intermédiaire - Leçon 2',
-        content: 'Le développement durable est important pour notre avenir.',
-      },
-      {
-        id: '3',
-        title: '2. Intermédiaire - Leçon 3',
-        content:
-          "Les ordinateurs permettent d'automatiser des tâches complexes.",
-      },
-    ],
-    '3': [
-      {
-        id: '1',
-        title: '3. Expert - Leçon 1',
-        content:
-          "L'intelligence artificielle est en train de transformer de nombreux secteurs, tels que la santé, l'éducation et les transports. Grâce aux algorithmes d'apprentissage automatique, les machines sont capables de traiter des quantités massives de données, de reconnaître des motifs et de prendre des décisions avec une précision croissante. Cela offre un potentiel énorme pour améliorer la productivité et résoudre des problèmes complexes.",
-      },
-      {
-        id: '2',
-        title: '3. Expert - Leçon 2',
-        content:
-          "Les algorithmes d'apprentissage profond, basés sur des réseaux de neurones artificiels, permettent d'analyser des données à une échelle sans précédent. Ils sont utilisés dans des domaines tels que la reconnaissance d'images, le traitement du langage naturel et les systèmes de recommandation. Ces algorithmes sont également capables d'apprendre de manière autonome à partir des données, ce qui ouvre la voie à de nouvelles découvertes scientifiques.",
-      },
-      {
-        id: '3',
-        title: '3. Expert - Leçon 3',
-        content:
-          "La cryptographie joue un rôle essentiel dans la sécurisation des communications numériques. Elle permet de protéger les informations sensibles, comme les données bancaires ou les messages personnels, contre les cyberattaques. Avec l'évolution des technologies, des techniques de cryptage toujours plus complexes sont développées pour assurer la confidentialité et l'intégrité des échanges sur internet.",
-      },
-    ],
-  },
-};
+  );
 
-function TypingApp() {
-  const [level, setLevel] = useState<string>('');
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [userInput, setUserInput] = useState<string>('');
-  const [errorCount, setErrorCount] = useState<number>(0);
-  const [globalErrorCount, setGlobalErrorCount] = useState<number>(0);
-  const [timer, setTimer] = useState<number>(0);
-  const [timeInterval, setTimeInterval] = useState<
-    ReturnType<typeof setTimeout> | number
-  >(0);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [sessionData, setSessionData] = useState<{
-    errors: number;
-    time: number;
-  } | null>(null);
-
-  // Référence pour le champ TextField
-  const textFieldRef = useRef<HTMLInputElement>(null);
-
-  const controller = React.useRef<TConductorInstance>();
-
-  const onInitHandler = (params: {
-    confetti: TCanvasConfettiInstance;
-    conductor: TConductorInstance;
-  }): void => {
-    controller.current = params.conductor;
-  };
+  useKeyPress(handleKeyPress);
 
   useEffect(() => {
-    if (level) {
-      setLessons(mockedLessons.lessons[level] || []);
-    }
-  }, [level]);
+    let interval: NodeJS.Timeout;
 
-  const handleLevelChange = (event: SelectChangeEvent<string>) => {
-    setLevel(event.target.value as string);
-    setSelectedLesson(null);
-    setUserInput('');
-    setErrorCount(0);
-    setSessionData(null);
-  };
-
-  const handleLessonChange = (event: SelectChangeEvent<string>) => {
-    const lessonId = event.target.value as string;
-    const lesson = lessons.find((l) => l.id === lessonId) || null;
-    setSelectedLesson(lesson);
-    setUserInput('');
-    setErrorCount(0);
-    setSessionData(null);
-  };
-
-  const stopTypingSession = () => {
-    // Reset the timer value to 0
-    setTimer(0);
-    // Clear the interval to stop the timer
-    clearInterval(timeInterval);
-
-    setIsTyping(false);
-    setSessionData({
-      errors: globalErrorCount,
-      time: timer,
-    });
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setUserInput(value);
-
-    const originalText = selectedLesson?.content || '';
-
-    // Diviser le texte original et la saisie de l'utilisateur en mots
-    const originalWords = originalText.split(' ');
-    const userWords = value.split(' ');
-
-    let liveErrors = 0; // Erreurs en temps réel
-
-    // Comparer les mots jusqu'à la longueur de la saisie utilisateur
-    const minLength = Math.min(originalWords.length, userWords.length);
-
-    for (let i = 0; i < minLength; i += 1) {
-      const originalWord = originalWords[i];
-      const userWord = userWords[i];
-
-      if (userWord.length <= originalWord.length) {
-        // Si le mot saisi est partiel, on compare les caractères partiellement
-        for (let j = 0; j < userWord.length; j += 1) {
-          if (userWord[j] !== originalWord[j]) {
-            liveErrors += 1;
-          }
+    if (isGameActive) {
+      interval = setInterval(() => {
+        if (seconds > 0) {
+          setSeconds((prevSeconds) => prevSeconds - 1);
+        } else if (minutes > 0) {
+          setMinutes((prevMinutes) => prevMinutes - 1);
+          setSeconds(59);
+        } else {
+          clearInterval(interval);
+          setIsGameActive(false);
         }
-      } else {
-        // Si le mot est plus long que prévu, on compte ça comme une erreur entière
-        liveErrors += 1;
-      }
+      }, 1000);
     }
 
-    // Mettre à jour les erreurs en temps réel
-    setErrorCount(liveErrors);
-
-    // Mettre à jour les erreurs globales seulement s'il n'y a pas de correction active
-    if (liveErrors !== 0 && liveErrors > globalErrorCount)
-      setGlobalErrorCount(liveErrors);
-
-    // Si l'utilisateur a saisi autant de caractères que le texte original ou plus, considérer la saisie comme terminée
-    if (value.length >= originalText.length && liveErrors === 0) {
-      stopTypingSession();
-    }
-  };
-
-  const startTypingSession = () => {
-    setIsTyping(true);
-    setUserInput('');
-    setErrorCount(0);
-    setGlobalErrorCount(0);
-    setTimer(0);
-    setSessionData(null);
-
-    // Donne le focus au champ de texte
-
-    setTimeout(() => {
-      textFieldRef.current?.focus();
-    }, 100);
-
-    // Use setInterval to update the timer every 1000 milliseconds (1 second)
-    setTimeInterval(
-      setInterval(() => {
-        // Update the timer by incrementing the previous value by 1
-        setTimer((prev) => prev + 1);
-      }, 1000),
-    );
-  };
-
-  const isComplete = userInput === selectedLesson?.content;
-
-  const renderColoredInput = (text: string, input: string) => {
-    const originalWords = text.split(' ');
-    const inputWords = input.split(' ');
-
-    const renderedText = [];
-
-    for (let i = 0; i < originalWords.length; i += 1) {
-      const originalWord = originalWords[i] || '';
-      const inputWord = inputWords[i] || '';
-
-      if (inputWord === originalWord) {
-        // Le mot entier est correct
-        renderedText.push(
-          <span key={i} style={{ color: 'green', marginRight: '5px' }}>
-            {originalWord}
-          </span>,
-        );
-      } else {
-        // Comparer chaque caractère du mot si le mot est partiel ou incorrect
-        for (let j = 0; j < originalWord.length; j += 1) {
-          const originalChar = originalWord[j] || '';
-          const inputChar = inputWord[j] || '';
-
-          if (inputChar === originalChar) {
-            renderedText.push(
-              <span key={`${i}-${j}`} style={{ color: 'green' }}>
-                {inputChar}
-              </span>,
-            );
-          } else if (inputChar) {
-            renderedText.push(
-              <span key={`${i}-${j}`} style={{ color: 'red' }}>
-                {originalChar}
-              </span>,
-            );
-          } else {
-            renderedText.push(<span key={`${i}-${j}`}>{originalChar}</span>);
-          }
-        }
-        renderedText.push(<span key={`space-${i}`}> </span>); // Ajouter un espace entre les mots
-      }
-    }
-
-    return <span>{renderedText}</span>;
-  };
+    return () => clearInterval(interval);
+  }, [isGameActive, seconds, minutes]);
 
   return (
-    <>
-      <Fireworks onInit={onInitHandler} />
-      <Grid container>
-        <Grid size={12}>
-          <MyBreadcrumbs title="Aide à la frappe" />
-          <Box sx={{ p: 2 }}>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem />}
-              spacing={2}
-            >
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="select-level">Niveau</InputLabel>
-                <Select
-                  labelId="select-level"
-                  id="level-select"
-                  value={level}
-                  onChange={handleLevelChange}
-                  label="Niveau"
-                >
-                  <MenuItem value={1}>Débutant</MenuItem>
-                  <MenuItem value={2}>Intermédiaire</MenuItem>
-                  <MenuItem value={3}>Expert</MenuItem>
-                </Select>
-              </FormControl>
+    <Grid container>
+      <Grid size={12}>
+        <MyBreadcrumbs title="Aide à la frappe" />
+        <Box sx={{ p: 2 }}>
+          <Stack
+            direction="row"
+            alignItems="baseline"
+            justifyContent="space-between"
+            spacing={2}
+          >
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<PlayArrowIcon />}
+                disabled={isGameActive}
+                onClick={startGame}
+              >
+                Démarrer
+              </Button>
+            </FormControl>
 
+            {isGameActive && (
               <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="select-lesson">Leçons</InputLabel>
-                <Select
-                  labelId="select-lesson"
-                  id="lesson-select"
-                  value={selectedLesson?.id || ''}
-                  onChange={handleLessonChange}
-                  label="Leçon"
-                  disabled={!level}
-                >
-                  {lessons.map((lesson) => (
-                    <MenuItem key={lesson.id} value={lesson.id}>
-                      {lesson.title}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <TextField
+                  label="Temps restant"
+                  variant="outlined"
+                  value={`${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`}
+                  sx={{ marginBottom: 2 }}
+                />
               </FormControl>
-            </Stack>
-          </Box>
-        </Grid>
+            )}
+          </Stack>
+        </Box>
+      </Grid>
 
-        {selectedLesson && (
-          <Grid size={12}>
-            <Box sx={{ p: 2 }}>
-              <Grid
-                container
-                spacing={2}
+      <Grid size={12} p={2}>
+        {isGameActive && (
+          <Paper elevation={3} sx={{ p: 6 }}>
+            <Typography variant="h4">
+              <Box component="span" sx={{ color: 'secondary.main' }}>
+                {(leftPadding + outgoingChars).slice(-30)}
+              </Box>
+              <Box
+                component="span"
                 sx={{
-                  justifyContent: 'space-evenly',
-                  alignItems: 'stretch',
+                  backgroundColor: wrongChar ? 'error.main' : 'success.main',
                 }}
               >
-                <Grid size={6}>
-                  <Paper sx={{ p: 2 }}>
-                    <Typography variant="h6">
-                      {renderColoredInput(selectedLesson.content, userInput)}
-                    </Typography>
-                  </Paper>
-                </Grid>
-                <Grid size={6}>
-                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                    <Button
-                      variant="contained"
-                      size="large"
-                      endIcon={<PlayArrowIcon />}
-                      disabled={
-                        !selectedLesson || isTyping || sessionData !== null
-                      }
-                      onClick={startTypingSession}
-                    >
-                      Démarrer
-                    </Button>
-                  </FormControl>
-                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                    <Button
-                      variant="contained"
-                      size="large"
-                      endIcon={<PlayArrowIcon />}
-                      disabled={!selectedLesson || isTyping || !sessionData}
-                      onClick={startTypingSession}
-                    >
-                      Recommencer
-                    </Button>
-                  </FormControl>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={userInput}
-                    onChange={handleInputChange}
-                    placeholder="Commencez à taper ici..."
-                    error={errorCount > 0}
-                    helperText={`Erreurs: ${errorCount}`}
-                    disabled={!isTyping}
-                    inputRef={textFieldRef} // Ajoute la référence ici
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
+                {currentChar}
+              </Box>
+              <Box component="span">{incomingChars.substr(0, 30)}</Box>
+            </Typography>
+          </Paper>
         )}
 
-        {sessionData && (
-          <Grid size={12}>
-            <Paper elevation={0} sx={{ p: 2 }}>
-              {isComplete && (
-                <Typography variant="h6" color="success.main">
-                  Félicitations, vous avez réussi !
-                </Typography>
-              )}
-              <Typography variant="body1">
-                Erreurs: {sessionData.errors}
+        {!isGameActive && minutes === 0 && seconds === 0 && (
+          <Alert severity="info">
+            <AlertTitle>
+              <Typography variant="h4" fontWeight="bold">
+                Time's Up!
               </Typography>
-              <Typography variant="body1">
-                Temps écoulé: {sessionData.time}s
-              </Typography>
-            </Paper>
-          </Grid>
+            </AlertTitle>
+            <Typography variant="h6">Nombre de mots : {wordCount}</Typography>
+            <Typography variant="h6">Précision : {accuracy}%</Typography>
+          </Alert>
         )}
       </Grid>
-    </>
+    </Grid>
   );
 }
 
-export default TypingApp;
+export default Typing;

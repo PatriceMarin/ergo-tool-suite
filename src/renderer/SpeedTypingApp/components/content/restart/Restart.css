@@ -1,0 +1,17 @@
+/* .restart {
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease-in-out;
+  }
+  
+  .restart:hover {
+    border: 1px solid #1f1f1f;
+    transform: rotate(-90deg);
+    border-radius: 50%;
+  } */

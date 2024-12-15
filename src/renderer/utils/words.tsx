@@ -1,9 +1,19 @@
-import { en, Faker, generateMersenne53Randomizer } from '@faker-js/faker';
+import { fr, Faker, generateMersenne53Randomizer } from '@faker-js/faker';
 
 const randomizer = generateMersenne53Randomizer();
 
-const frFaker = new Faker({ locale: en, randomizer });
+const frFaker = new Faker({ locale: fr, randomizer });
 
-export default function words(count = 10) {
+export function getWordsSeparatedBySpace(count = 10): string {
   return frFaker.word.words(count);
+}
+
+export function getWords(count = 10, minLength = 5, maxLength = 10): string[] {
+  return frFaker.helpers.uniqueArray(() => {
+    let word;
+    do {
+      word = frFaker.word.noun().toUpperCase(); // Génère un mot
+    } while (word.length < minLength || word.length > maxLength); // Vérifie la longueur du mot
+    return word;
+  }, count);
 }
