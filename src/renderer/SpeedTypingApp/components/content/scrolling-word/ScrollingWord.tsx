@@ -40,10 +40,13 @@ function ScrollingWord({
       const typedLetter = typingWord ? typingWord[i] : undefined;
 
       if (typedLetter === undefined) {
-        return { letter, color: theme.palette.text.disabled };
+        return { letter, color: theme.palette.text.primary };
       }
       if (typedLetter !== letter) {
         return { letter, color: theme.palette.error.main };
+      }
+      if (typedLetter === letter) {
+        return { letter, color: theme.palette.success.main };
       }
       if (typedLetter === letter && typingWord === word) {
         return { letter, color: theme.palette.success.main };
@@ -54,8 +57,7 @@ function ScrollingWord({
     word,
     currentWord,
     typingWord,
-    theme.palette.text.primary,
-    theme.palette.text.disabled,
+    theme.palette.text,
     theme.palette.error.main,
     theme.palette.success.main,
   ]);
@@ -64,6 +66,8 @@ function ScrollingWord({
     <div
       className="word-box"
       style={{
+        color: theme.palette.text.primary,
+        background: theme.palette.background.paper,
         top: topPosition < 92 ? `${topPosition}%` : '92%',
       }}
     >

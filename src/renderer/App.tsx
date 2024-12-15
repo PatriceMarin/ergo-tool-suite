@@ -30,6 +30,18 @@ const theme = createTheme({
           secondary: 'rgba(0,0,0,0.6)',
           disabled: 'rgba(183,183,183,0.38)',
         },
+        success: {
+          main: '#2e7d32',
+          light: '#4caf50',
+          dark: '#1b5e20',
+          contrastText: '#fff',
+        },
+        error: {
+          main: '#d32f2f',
+          light: '#ef5350',
+          dark: '#c62828',
+          contrastText: '#fff',
+        },
         customWhite: {
           main: '#000000',
           light: '#FFFFFF', // Code couleur pour 'custom'

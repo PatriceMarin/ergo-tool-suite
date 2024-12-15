@@ -21,12 +21,12 @@ function calculatePositions(
     const leftPosition =
       Math.random() * (paddingRight - paddingLeft) + paddingLeft;
 
-    const distance = (index * 150) / words.length;
-    const topPosition = distance + Math.random() * (100 / words.length);
+    const distance = index * 25;
+    const topPosition = distance;
 
     return {
       word,
-      topPosition: (-containerHeight * topPosition) / 100,
+      topPosition: (-containerHeight * topPosition) / 50,
       leftPosition,
     };
   });
@@ -35,7 +35,7 @@ function calculatePositions(
 function GameScreen() {
   const { words, health, speed, level } = useGameState();
   const dispatch = useGameDispatch();
-  const containerHeight = 500;
+  const containerHeight = 50;
 
   const [wordPositions, setWordPositions] = useState<WordPosition[]>(() =>
     calculatePositions(words, containerHeight),

@@ -7,7 +7,6 @@ function getCommonPrefixWithDifference(str1: string, str2: string) {
 
   for (let i = 0; i < str2.length; i += 1) {
     if (str1[i] !== str2[i]) {
-      result += str2[i];
       break;
     }
     result += str2[i];

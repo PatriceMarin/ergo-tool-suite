@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid2';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
-import { useGameDispatch } from '../../context/GameContext';
+import { useGameDispatch, GameState } from '../../context/GameContext';
 import { getWords } from '../../../utils/words'; // Assurez-vous que ces utilitaires existent
 import MyBreadcrumbs from '../../../components/MyBreadcrumbs';
 
@@ -47,9 +47,19 @@ function LevelScreen() {
         break;
     }
 
-    dispatch({ type: 'SET_LEVEL', payload: currentLevel });
-    dispatch({ type: 'SET_WORDS', payload: words });
-    dispatch({ type: 'SET_CURRENT_STATE', payload: 'game' });
+    const game: GameState = {
+      level: currentLevel,
+      words,
+      currentWord: words[0],
+      typingWord: '',
+      matchedWord: '',
+      score: 0,
+      health: 3,
+      currentState: 'game',
+      speed: 0.75,
+    };
+
+    dispatch({ type: 'SET_GAME', payload: game });
   };
 
   return (
@@ -95,37 +105,6 @@ function LevelScreen() {
         </Box>
       </Grid>
     </Grid>
-    // <div className="level-screen">
-    //   <div className="level-content">
-    //     <div className="level-title">SELECT LEVEL</div>
-    //     <div className="level-buttons">
-    //       <Button
-    //         className={`level-button ${level === 'easy' ? 'active' : ''}`}
-    //         onClick={() => handleSetLevel('easy')}
-    //       >
-    //         Easy
-    //       </Button>
-    //       <Button
-    //         className={`level-button ${level === 'medium' ? 'active' : ''}`}
-    //         onClick={() => handleSetLevel('medium')}
-    //       >
-    //         Medium
-    //       </Button>
-    //       <Button
-    //         className={`level-button ${level === 'hard' ? 'active' : ''}`}
-    //         onClick={() => handleSetLevel('hard')}
-    //       >
-    //         Hard
-    //       </Button>
-    //       <Button
-    //         className={`level-button ${level === 'expert' ? 'active' : ''}`}
-    //         onClick={() => handleSetLevel('expert')}
-    //       >
-    //         Expert
-    //       </Button>
-    //     </div>
-    //   </div>
-    // </div>
   );
 }
 

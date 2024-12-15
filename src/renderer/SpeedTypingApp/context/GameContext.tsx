@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 // Définir les types pour l'état et les actions
-interface GameState {
+export interface GameState {
   level: string;
   words: string[];
   currentWord: string;
@@ -23,6 +23,7 @@ type Action =
   | { type: 'SET_HEALTH'; payload: number }
   | { type: 'SET_CURRENT_STATE'; payload: string }
   | { type: 'SET_SPEED'; payload: number }
+  | { type: 'SET_GAME'; payload: GameState }
   | { type: 'SET_RESTART'; payload: GameState };
 
 // Créer un état initial
@@ -70,6 +71,9 @@ const gameReducer = (state: GameState, action: Action): GameState => {
       return { ...state, speed: action.payload };
     case 'SET_CURRENT_STATE':
       return { ...state, currentState: action.payload };
+    case 'SET_GAME': {
+      return { ...state, ...action.payload };
+    }
     case 'SET_RESTART':
       return initialState;
     default:
