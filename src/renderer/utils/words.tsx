@@ -1,8 +1,8 @@
-import { en, Faker, generateMersenne53Randomizer } from '@faker-js/faker';
+import { fr, Faker, generateMersenne53Randomizer } from '@faker-js/faker';
 
 const randomizer = generateMersenne53Randomizer();
 
-const frFaker = new Faker({ locale: en, randomizer });
+const frFaker = new Faker({ locale: fr, randomizer });
 
 export function getWordsSeparatedBySpace(count = 10): string {
   return frFaker.word.words(count);
