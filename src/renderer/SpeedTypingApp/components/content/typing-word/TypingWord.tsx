@@ -2,25 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TextField } from '@mui/material';
 import { useGameState, useGameDispatch } from '../../../context/GameContext';
 
-function getCommonPrefixWithDifference(str1: string, str2: string) {
-  let result = '';
-
-  for (let i = 0; i < str2.length; i += 1) {
-    if (str1[i] !== str2[i]) {
-      break;
-    }
-    result += str2[i];
-  }
-
-  return result;
-}
-
 function TypingWord() {
-  const { typingWord, currentWord } = useGameState();
+  const { typingWord, typingError } = useGameState();
   const dispatch = useGameDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean | null>(typingError);
+
+  useEffect(() => {
+    setError(typingError);
+  }, [typingError]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -29,21 +20,8 @@ function TypingWord() {
   }, []);
 
   const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value.toUpperCase();
-
-    if (currentWord.startsWith(newValue) || newValue === '') {
-      dispatch({ type: 'SET_TYPING_WORD', payload: newValue });
-      setError(null);
-    } else {
-      setError(newValue);
-
-      const diff = getCommonPrefixWithDifference(currentWord, newValue);
-
-      dispatch({
-        type: 'SET_TYPING_WORD',
-        payload: diff,
-      });
-    }
+    const newValue = event.target.value.toLocaleUpperCase('fr-FR');
+    dispatch({ type: 'SET_TYPING_WORD', payload: newValue });
   };
 
   return (

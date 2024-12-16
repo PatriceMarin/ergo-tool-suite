@@ -12,7 +12,7 @@ export function getWords(count = 10, minLength = 5, maxLength = 10): string[] {
   return frFaker.helpers.uniqueArray(() => {
     let word;
     do {
-      word = frFaker.word.words().toUpperCase(); // Génère un mot
+      word = frFaker.word.words().split(' ')[0].toLocaleUpperCase('fr-FR'); // Génère un mot
     } while (word.length < minLength || word.length > maxLength); // Vérifie la longueur du mot
     return word;
   }, count);

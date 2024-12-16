@@ -16,7 +16,7 @@ function ScrollingWord({
   onMissed,
   onMatched,
 }: ScrollingWordProps) {
-  const { typingWord, currentWord } = useGameState();
+  const { currentWord, typingWord, typingError } = useGameState();
   const theme = useTheme();
 
   useEffect(() => {
@@ -33,34 +33,68 @@ function ScrollingWord({
 
   const coloredLetters = useMemo(() => {
     return word.split('').map((letter, i) => {
-      if (currentWord !== word) {
-        return { letter, color: theme.palette.text.primary };
+      if (currentWord && currentWord !== word) {
+        return {
+          letter,
+          color: theme.palette.text.primary,
+          matched: null,
+          key: `${letter}-${i}`,
+        };
       }
 
       const typedLetter = typingWord ? typingWord[i] : undefined;
+      const matched = typingError;
 
       if (typedLetter === undefined) {
-        return { letter, color: theme.palette.text.primary };
+        return {
+          letter,
+          color: theme.palette.text.primary,
+          matched,
+          key: `${letter}-${i}`,
+        };
       }
       if (typedLetter !== letter) {
-        return { letter, color: theme.palette.error.main };
+        return {
+          letter,
+          color: theme.palette.error.main,
+          matched: false,
+          key: `${letter}-${i}`,
+        };
       }
       if (typedLetter === letter) {
-        return { letter, color: theme.palette.success.main };
+        return {
+          letter,
+          color: theme.palette.success.main,
+          matched,
+          key: `${letter}-${i}`,
+        };
       }
       if (typedLetter === letter && typingWord === word) {
-        return { letter, color: theme.palette.success.main };
+        return {
+          letter,
+          color: theme.palette.success.main,
+          matched,
+          key: `${letter}-${i}`,
+        };
       }
-      return { letter, color: theme.palette.text.primary };
+      return {
+        letter,
+        color: theme.palette.text.primary,
+        matched,
+        key: `${letter}-${i}`,
+      };
     });
   }, [
     word,
     currentWord,
     typingWord,
-    theme.palette.text,
+    typingError,
+    theme.palette.text.primary,
     theme.palette.error.main,
     theme.palette.success.main,
   ]);
+
+  const hasError = coloredLetters.some((x) => !!x.matched);
 
   return (
     <div
@@ -69,15 +103,21 @@ function ScrollingWord({
         color: theme.palette.text.primary,
         background: theme.palette.background.paper,
         top: topPosition < 92 ? `${topPosition}%` : '92%',
+        border: '2px solid',
+        borderColor: hasError
+          ? theme.palette.error.main
+          : theme.palette.info.main,
       }}
     >
-      {coloredLetters.map((coloredLetter, i) => (
-        <div className="letter-box" key={i}>
-          <div className="letter" style={{ color: coloredLetter.color }}>
-            {coloredLetter.letter}
+      {coloredLetters.map((coloredLetter) => {
+        return (
+          <div className="letter-box" key={coloredLetter.key}>
+            <div className="letter" style={{ color: coloredLetter.color }}>
+              {coloredLetter.letter}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

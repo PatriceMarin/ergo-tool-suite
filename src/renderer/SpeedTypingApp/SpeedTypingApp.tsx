@@ -4,6 +4,7 @@ import {
   GameProvider,
   useGameState,
   useGameDispatch,
+  initialState,
 } from './context/GameContext';
 import GameScreen from './components/game-screen/GameScreen';
 import LevelScreen from './components/level-screen/LevelScreen';
@@ -16,7 +17,7 @@ function AppContent() {
   const dispatch = useGameDispatch();
 
   const handleFireworksComplete = () => {
-    dispatch({ type: 'SET_CURRENT_STATE', payload: 'level' });
+    dispatch({ type: 'SET_RESTART', payload: initialState });
   };
 
   return (

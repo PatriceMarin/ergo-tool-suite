@@ -33,12 +33,12 @@ function calculatePositions(
 }
 
 function GameScreen() {
-  const { words, health, speed, level } = useGameState();
+  const context = useGameState();
   const dispatch = useGameDispatch();
   const containerHeight = 50;
 
   const [wordPositions, setWordPositions] = useState<WordPosition[]>(() =>
-    calculatePositions(words, containerHeight),
+    calculatePositions(context.words, containerHeight),
   );
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function GameScreen() {
         prevPositions.map(({ word, topPosition, leftPosition }) => {
           return {
             word,
-            topPosition: topPosition + speed,
+            topPosition: topPosition + context.speed,
             leftPosition, // Keep left position unchanged
           };
         }),
@@ -55,89 +55,74 @@ function GameScreen() {
     }, 100);
 
     return () => clearInterval(interval);
-  }, [speed]);
+  }, [context.speed]);
 
-  const handleWordMissed = useCallback(
+  const handleMissedWord = useCallback(
     (word: string) => {
       setWordPositions((prevPositions) =>
         prevPositions.filter((pos) => pos.word !== word),
       );
 
       dispatch({
-        type: 'SET_WORDS',
-        payload: words.filter((w) => w !== word),
-      });
-
-      dispatch({
-        type: 'SET_CURRENT_WORD',
-        payload: words.filter((w) => w !== word)[0],
-      });
-
-      dispatch({
-        type: 'SET_HEALTH',
-        payload: health - 1,
-      });
-
-      dispatch({
-        type: 'SET_TYPING_WORD',
-        payload: '',
+        type: 'SET_TYPED_WORD',
+        payload: {
+          ...context,
+          words: context.words.filter((w) => w !== word),
+          currentWord: context.words.filter((w) => w !== word)[0],
+          health: context.health - 1,
+          typingWord: '',
+        },
       });
     },
-    [words, dispatch, health],
+    [dispatch, context],
   );
 
-  const handleWordMatched = useCallback(
+  const handleMatchedWord = useCallback(
     (word: string) => {
       setWordPositions((prevPositions) =>
         prevPositions.filter((pos) => pos.word !== word),
       );
 
       dispatch({
-        type: 'SET_WORDS',
-        payload: words.filter((w) => w !== word),
+        type: 'SET_TYPED_WORD',
+        payload: {
+          ...context,
+          words: context.words.filter((w) => w !== word),
+          currentWord: context.words.filter((w) => w !== word)[0],
+          typingWord: '',
+        },
       });
 
-      dispatch({
-        type: 'SET_TYPING_WORD',
-        payload: '',
-      });
-
-      dispatch({
-        type: 'SET_CURRENT_WORD',
-        payload: words.filter((w) => w !== word)[0],
-      });
-
-      switch (level) {
+      switch (context.level) {
         case 'easy':
           dispatch({
             type: 'SET_SPEED',
-            payload: speed * 1.03,
+            payload: context.speed * 1.03,
           });
           break;
         case 'medium':
           dispatch({
             type: 'SET_SPEED',
-            payload: speed * 1.04,
+            payload: context.speed * 1.04,
           });
           break;
         case 'hard':
           dispatch({
             type: 'SET_SPEED',
-            payload: speed * 1.05,
+            payload: context.speed * 1.05,
           });
           break;
         case 'expert':
           dispatch({
             type: 'SET_SPEED',
-            payload: speed * 1.06,
+            payload: context.speed * 1.06,
           });
           break;
         default:
-          // Par défaut, vous pouvez gérer un cas où le niveau ne correspond à aucun des cas définis
           break;
       }
     },
-    [dispatch, words, speed, level],
+    [dispatch, context],
   );
 
   return (
@@ -148,8 +133,8 @@ function GameScreen() {
             key={word}
             word={word}
             topPosition={topPosition}
-            onMissed={() => handleWordMissed(word)}
-            onMatched={() => handleWordMatched(word)}
+            onMissed={() => handleMissedWord(word)}
+            onMatched={() => handleMatchedWord(word)}
           />
         ))}
       </Grid>

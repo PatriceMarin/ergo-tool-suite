@@ -57,6 +57,7 @@ function LevelScreen() {
       health: 3,
       currentState: 'game',
       speed: 0.75,
+      typingError: null,
     };
 
     dispatch({ type: 'SET_GAME', payload: game });

@@ -11,20 +11,15 @@ export interface GameState {
   health: number;
   currentState: string;
   speed: number;
+  typingError: boolean | null;
 }
 
 type Action =
-  | { type: 'SET_LEVEL'; payload: string }
-  | { type: 'SET_WORDS'; payload: string[] }
-  | { type: 'SET_CURRENT_WORD'; payload: string }
   | { type: 'SET_TYPING_WORD'; payload: string }
-  | { type: 'SET_MATCHED_WORD'; payload: string }
-  | { type: 'SET_SCORE'; payload: number }
-  | { type: 'SET_HEALTH'; payload: number }
-  | { type: 'SET_CURRENT_STATE'; payload: string }
   | { type: 'SET_SPEED'; payload: number }
   | { type: 'SET_GAME'; payload: GameState }
-  | { type: 'SET_RESTART'; payload: GameState };
+  | { type: 'SET_RESTART'; payload: GameState }
+  | { type: 'SET_TYPED_WORD'; payload: GameState };
 
 // Créer un état initial
 export const initialState: GameState = {
@@ -37,45 +32,59 @@ export const initialState: GameState = {
   health: 3,
   currentState: 'level',
   speed: 0.5,
+  typingError: false,
 };
+
+function getCommonPrefixWithDifference(
+  currentWord: string,
+  typingWord: string,
+) {
+  let result = '';
+
+  for (let i = 0; i < typingWord.length; i += 1) {
+    if (currentWord[i].localeCompare(typingWord[i], 'fr-FR') === 0) {
+      result += typingWord[i];
+    }
+  }
+
+  return result;
+}
 
 // Créer un réducteur pour mettre à jour l'état
 const gameReducer = (state: GameState, action: Action): GameState => {
   switch (action.type) {
-    case 'SET_LEVEL':
-      return { ...state, level: action.payload, words: [] }; // Always clear words when level changes
-    case 'SET_WORDS': {
-      const words = action.payload;
-
-      if (words.length === 0) {
-        return { ...state, words, currentState: 'you-win' };
+    case 'SET_TYPING_WORD': {
+      if (
+        state.currentWord.startsWith(action.payload) ||
+        action.payload === ''
+      ) {
+        return { ...state, typingWord: action.payload, typingError: false };
       }
 
-      return { ...state, words, currentWord: words[0] };
-    }
-    case 'SET_CURRENT_WORD':
-      return { ...state, currentWord: action.payload };
-    case 'SET_TYPING_WORD':
-      return { ...state, typingWord: action.payload };
-    case 'SET_MATCHED_WORD':
-      return { ...state, matchedWord: action.payload };
-    case 'SET_SCORE':
-      return { ...state, score: action.payload };
-    case 'SET_HEALTH': {
-      if (action.payload <= 0) {
-        return { ...state, health: action.payload, currentState: 'game-over' };
-      }
-      return { ...state, health: action.payload };
+      const diff = getCommonPrefixWithDifference(
+        state.currentWord,
+        action.payload,
+      );
+      return { ...state, typingWord: diff, typingError: true };
     }
     case 'SET_SPEED':
       return { ...state, speed: action.payload };
-    case 'SET_CURRENT_STATE':
-      return { ...state, currentState: action.payload };
     case 'SET_GAME': {
       return { ...state, ...action.payload };
     }
     case 'SET_RESTART':
       return initialState;
+    case 'SET_TYPED_WORD': {
+      if (action.payload.health <= 0) {
+        return { ...state, ...action.payload, currentState: 'game-over' };
+      }
+
+      if (action.payload.words.length === 0) {
+        return { ...state, ...action.payload, currentState: 'you-win' };
+      }
+
+      return { ...state, ...action.payload };
+    }
     default:
       return state;
   }
