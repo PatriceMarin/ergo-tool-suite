@@ -5,6 +5,7 @@ import AdminLayout from './components/AdminLayout';
 import MyKeyboardApp from './MyKeyboardApp';
 import TypingApp from './TypingApp';
 import SpeedTypingApp from './SpeedTypingApp/SpeedTypingApp';
+import HomeApp from './HomeApp';
 
 const theme = createTheme({
   cssVariables: {
@@ -73,6 +74,12 @@ const theme = createTheme({
           default: '#192231',
           paper: '#192231',
         },
+        action: {
+          active: '#fff',
+          hover: 'rgba(255, 255, 255, 0.08)',
+          hoverOpacity: 0.08,
+          selected: '#FFF',
+        },
       },
     },
   },
@@ -87,6 +94,7 @@ export default function App() {
       <HashRouter>
         <Routes>
           <Route path="/" element={<AdminLayout />}>
+            <Route index element={<HomeApp />} />
             <Route path="/myKeyboardApp" element={<MyKeyboardApp />} />
             <Route path="/typingApp" element={<TypingApp />} />
             <Route path="/speedTypingApp" element={<SpeedTypingApp />} />

@@ -1,13 +1,24 @@
-import { Box, Breadcrumbs, Link, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
-function MyBreadcrumbs({ title }: { title: string }) {
+export enum TitleKind {
+  NONE,
+}
+
+interface MyBreadcrumbsProps {
+  title: string | TitleKind;
+}
+
+function MyBreadcrumbs({ title }: MyBreadcrumbsProps) {
   return (
     <Box p={2}>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="/">
-          Apps
+        <Link to="/">
+          <Typography sx={{ color: 'text.primary' }}>Apps</Typography>
         </Link>
-        <Typography sx={{ color: 'text.primary' }}>{title}</Typography>
+        {title !== TitleKind.NONE && (
+          <Typography sx={{ color: 'text.primary' }}>{title}</Typography>
+        )}
       </Breadcrumbs>
     </Box>
   );
