@@ -17,7 +17,7 @@ function KeyHiddenLabel({ keyData }: Readonly<KeyHiddenLabelProps>) {
       sx={{ color: 'transparent' }}
     >
       {keyData.label.split('\n').map((line: string) => (
-        <div key={`${keyData.id}-hidden`}>{line}</div>
+        <div key={`${keyData.id}-${line}-hidden`}>{line}</div>
       ))}
     </Box>
   );

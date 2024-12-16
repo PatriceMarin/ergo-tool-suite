@@ -18,7 +18,7 @@ function KeyMultiLineLabel({ keyData }: Readonly<KeyMultiLineLabelProps>) {
     >
       {keyData.label.split('\n').map((line: string, index: number) => (
         <div
-          key={`${keyData.id}-label`}
+          key={`${keyData.id}-${line}-label`}
           style={{ alignSelf: index === 0 ? 'flex-start' : 'flex-end' }}
         >
           {line}
